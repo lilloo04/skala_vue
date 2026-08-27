@@ -83,3 +83,32 @@ const clickDetail = () => {
     </button>
   </article>
 </template>
+
+<style scoped>
+.weather-card {
+  padding: 24px;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  background-color: white;
+  box-shadow: 0 8px 24px rgb(15 23 42 / 8%);
+  cursor: pointer;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+
+.weather-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgb(15 23 42 / 15%);
+}
+
+.card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.card-top h2 {
+  margin: 0;
+}
+</style>
