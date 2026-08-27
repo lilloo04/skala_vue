@@ -32,6 +32,10 @@ import UnitToggler from './components/hands-on/exercise/UnitToggler.vue'
         <RouterLink to="/about">
           서비스 소개
         </RouterLink>
+
+        <RouterLink to="/map">
+          전국 지도
+        </RouterLink>
       </div>
 
       <UnitToggler />

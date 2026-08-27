@@ -16,6 +16,13 @@ const routes = [
     ),
   },
   {
+    path: '/map',
+    name: 'national-weather-map',
+    component: () => import(
+      '../views/NationalWeatherMapView.vue'
+    ),
+  },
+  {
     path: '/weather/:cityId',
     name: 'weather-detail',
     component: () => import(
