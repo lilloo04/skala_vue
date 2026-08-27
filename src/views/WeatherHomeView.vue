@@ -1,6 +1,7 @@
 <script setup>
 import {
   computed,
+  onMounted,
   ref,
   watch,
   watchEffect,
@@ -12,7 +13,8 @@ import BaseDashboardCard from '../components/hands-on/exercise/BaseDashboardCard
 import SearchBar from '../components/hands-on/exercise/SearchBar.vue'
 import WeatherCard from '../components/hands-on/exercise/WeatherCard.vue'
 import HotFilter from '../components/hands-on/exercise/HotFilter.vue'
-import { weatherData } from '../data/weatherData'
+import { weatherData } from '../data/weatherApiData'
+import { getCurrentWeather } from '../services/weatherApi'
 import { useConfigStore } from '../stores/configStore'
 
 const router = useRouter()
@@ -25,7 +27,9 @@ const {
   convertTemperature,
 } = storeToRefs(configStore)
 
-const weatherList = ref(weatherData)
+const weatherList = ref([])
+const isLoading = ref(true)
+const errorMessage = ref('')
 
 const searchQuery = ref('')
 const selectedCity = ref(null)
@@ -107,6 +111,18 @@ watch(showHotOnly, (newValue) => {
     )
   }
 })
+
+onMounted(async () => {
+  try {
+    weatherList.value = await Promise.all(
+      weatherData.map((city) => getCurrentWeather(city)),
+    )
+  } catch (error) {
+    errorMessage.value = error.message
+  } finally {
+    isLoading.value = false
+  }
+})
 </script>
 
 <template>
@@ -134,6 +150,16 @@ watch(showHotOnly, (newValue) => {
     <div class="status-bar">
       {{ selectedCityInfo }}
     </div>
+
+    <p v-if="isLoading" class="message">
+      실제 날씨 데이터를 불러오는 중입니다.
+    </p>
+
+    <p v-else-if="errorMessage" class="message error-message">
+      {{ errorMessage }}
+      <br />
+      .env 파일에 OpenWeatherMap API 키를 설정해 주세요.
+    </p>
 
     <BaseDashboardCard variant="list">
       <section
@@ -217,5 +243,16 @@ watch(showHotOnly, (newValue) => {
   margin: 20px 0;
   color: #64748b;
   text-align: center;
+}
+
+.message {
+  max-width: 1040px;
+  margin: 20px auto;
+  color: #475569;
+  text-align: center;
+}
+
+.error-message {
+  color: #b91c1c;
 }
 </style>

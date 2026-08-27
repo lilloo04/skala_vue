@@ -6,7 +6,8 @@ import {
   useRoute,
 } from 'vue-router'
 
-import { weatherData } from '../data/weatherData'
+import { weatherData } from '../data/weatherApiData'
+import { getCityWeather } from '../services/weatherApi'
 import { useConfigStore } from '../stores/configStore'
 
 const route = useRoute()
@@ -20,21 +21,46 @@ const {
 } = storeToRefs(configStore)
 
 const selectedWeather = ref(null)
+const isLoading = ref(true)
+const errorMessage = ref('')
 
-onMounted(() => {
+onMounted(async () => {
   const cityId = route.params.cityId
+  const city = weatherData.find(
+    (weather) => weather.id === cityId,
+  )
 
-  selectedWeather.value =
-    weatherData.find(
-      (weather) => weather.id === cityId,
-    ) ?? null
+  if (!city) {
+    isLoading.value = false
+    return
+  }
+
+  try {
+    selectedWeather.value = await getCityWeather(city)
+  } catch (error) {
+    errorMessage.value = error.message
+  } finally {
+    isLoading.value = false
+  }
 })
 </script>
 
 <template>
   <main class="detail-page">
+    <p v-if="isLoading" class="message">
+      실제 날씨 데이터를 불러오는 중입니다.
+    </p>
+
+    <section v-else-if="errorMessage" class="not-found">
+      <h1>날씨 정보를 불러올 수 없습니다.</h1>
+      <p>{{ errorMessage }}</p>
+      <RouterLink to="/" class="back-link">
+        날씨 대시보드로 돌아가기
+      </RouterLink>
+    </section>
+
     <section
-      v-if="selectedWeather"
+      v-else-if="selectedWeather"
       class="detail-card"
     >
       <div class="detail-header">
@@ -95,8 +121,26 @@ onMounted(() => {
           <span>강수 확률</span>
 
           <strong>
-            {{ selectedWeather.rainProbability }}%
+            {{ selectedWeather.rainProbability ?? '정보 없음' }}<span
+              v-if="selectedWeather.rainProbability !== null"
+            >%</span>
           </strong>
+        </div>
+
+        <div
+          v-if="selectedWeather.airQuality"
+          class="detail-item"
+        >
+          <span>대기질 AQI</span>
+          <strong>{{ selectedWeather.airQuality.aqi ?? '정보 없음' }}</strong>
+        </div>
+
+        <div
+          v-if="selectedWeather.airQuality"
+          class="detail-item"
+        >
+          <span>초미세먼지</span>
+          <strong>{{ selectedWeather.airQuality.pm25 ?? '정보 없음' }} μg/m³</strong>
         </div>
       </div>
 
@@ -214,6 +258,13 @@ onMounted(() => {
 }
 
 .not-found {
+  text-align: center;
+}
+
+.message {
+  max-width: 600px;
+  margin: 0 auto;
+  color: #475569;
   text-align: center;
 }
 </style>

@@ -25,6 +25,14 @@ See [Vite Configuration Reference](https://vite.dev/config/).
 npm install
 ```
 
+### OpenWeatherMap API 설정
+
+1. OpenWeatherMap에서 API 키를 발급받습니다.
+2. `.env.example`을 `.env`로 복사합니다.
+3. `.env`의 `VITE_OPENWEATHER_API_KEY`에 발급받은 키를 입력합니다.
+
+홈 화면은 OpenWeatherMap 현재 날씨 API를 사용하고, 상세 화면은 Open-Meteo 대기질 API도 함께 사용합니다.
+
 ### Compile and Hot-Reload for Development
 
 ```sh
