@@ -1,72 +1,9 @@
 <script setup>
 import { computed, ref } from 'vue'
 
-const weatherList = ref([
-  {
-    id: 'city_01',
-    name: '서울',
-    temp: 28,
-    status: '맑음',
-    humidity: 45,
-    icon: '☀️',
-  },
-  {
-    id: 'city_02',
-    name: '수원',
-    temp: 24,
-    status: '비',
-    humidity: 80,
-    icon: '🌧️',
-  },
-  {
-    id: 'city_03',
-    name: '부산',
-    temp: 26,
-    status: '구름',
-    humidity: 65,
-    icon: '☁️',
-  },
-  {
-    id: 'city_04',
-    name: '제주',
-    temp: 29,
-    status: '맑음',
-    humidity: 70,
-    icon: '🌤️',
-  },
-  {
-    id: 'city_05',
-    name: '대전',
-    temp: 23,
-    status: '비',
-    humidity: 75,
-    icon: '🌧️',
-  },
-  {
-    id: 'city_06',
-    name: '광주',
-    temp: 27,
-    status: '맑음',
-    humidity: 60,
-    icon: '☀️',
-  },
-  {
-    id: 'city_07',
-    name: '인천',
-    temp: 22,
-    status: '흐림',
-    humidity: 55,
-    icon: '☁️',
-  },
-  {
-    id: 'city_08',
-    name: '대구',
-    temp: 30,
-    status: '맑음',
-    humidity: 50,
-    icon: '☀️',
-  },
-])
+import { weatherData } from '../../data/weatherData'
+
+const weatherList = ref(weatherData)
 
 const searchText = ref('')
 const selectedMessage = ref('도시를 선택해 주세요.')

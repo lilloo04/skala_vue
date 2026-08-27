@@ -1,117 +1,31 @@
 <script setup>
 import { onMounted, ref } from 'vue'
+import { storeToRefs } from 'pinia'
 import {
   RouterLink,
   useRoute,
 } from 'vue-router'
 
-const route = useRoute()
-const selectedWeather = ref(null)
+import { weatherData } from '../data/weatherData'
+import { useConfigStore } from '../stores/configStore'
 
-const weatherDetailList = [
-  {
-    id: 'city_01',
-    name: '서울',
-    temp: 28,
-    status: '맑음',
-    humidity: 45,
-    icon: '☀️',
-    wind: 2.4,
-    rainProbability: 10,
-    feelsLike: 30,
-    observation: '서울 종로구 관측소',
-  },
-  {
-    id: 'city_02',
-    name: '수원',
-    temp: 24,
-    status: '비',
-    humidity: 80,
-    icon: '🌧️',
-    wind: 3.8,
-    rainProbability: 80,
-    feelsLike: 25,
-    observation: '수원 권선구 관측소',
-  },
-  {
-    id: 'city_03',
-    name: '부산',
-    temp: 26,
-    status: '구름',
-    humidity: 65,
-    icon: '☁️',
-    wind: 4.5,
-    rainProbability: 30,
-    feelsLike: 27,
-    observation: '부산 중구 관측소',
-  },
-  {
-    id: 'city_04',
-    name: '제주',
-    temp: 29,
-    status: '맑음',
-    humidity: 70,
-    icon: '🌤️',
-    wind: 5.2,
-    rainProbability: 20,
-    feelsLike: 31,
-    observation: '제주 제주시 관측소',
-  },
-  {
-    id: 'city_05',
-    name: '대전',
-    temp: 23,
-    status: '비',
-    humidity: 75,
-    icon: '🌧️',
-    wind: 3.1,
-    rainProbability: 70,
-    feelsLike: 23,
-    observation: '대전 유성구 관측소',
-  },
-  {
-    id: 'city_06',
-    name: '광주',
-    temp: 27,
-    status: '맑음',
-    humidity: 60,
-    icon: '☀️',
-    wind: 2.8,
-    rainProbability: 10,
-    feelsLike: 29,
-    observation: '광주 북구 관측소',
-  },
-  {
-    id: 'city_07',
-    name: '인천',
-    temp: 22,
-    status: '흐림',
-    humidity: 55,
-    icon: '☁️',
-    wind: 4.7,
-    rainProbability: 40,
-    feelsLike: 21,
-    observation: '인천 중구 관측소',
-  },
-  {
-    id: 'city_08',
-    name: '대구',
-    temp: 30,
-    status: '맑음',
-    humidity: 50,
-    icon: '☀️',
-    wind: 1.9,
-    rainProbability: 10,
-    feelsLike: 32,
-    observation: '대구 동구 관측소',
-  },
-]
+const route = useRoute()
+
+// Pinia Store 불러오기
+const configStore = useConfigStore()
+
+const {
+  unitSymbol,
+  convertTemperature,
+} = storeToRefs(configStore)
+
+const selectedWeather = ref(null)
 
 onMounted(() => {
   const cityId = route.params.cityId
 
   selectedWeather.value =
-    weatherDetailList.find(
+    weatherData.find(
       (weather) => weather.id === cityId,
     ) ?? null
 })
@@ -139,8 +53,11 @@ onMounted(() => {
         </span>
       </div>
 
+      <!-- 현재 기온 -->
       <p class="temperature">
-        {{ selectedWeather.temp }}℃
+        {{ convertTemperature(
+          selectedWeather.temp,
+        ) }}{{ unitSymbol }}
       </p>
 
       <p class="status">
@@ -150,13 +67,17 @@ onMounted(() => {
       <div class="detail-grid">
         <div class="detail-item">
           <span>체감온도</span>
+
           <strong>
-            {{ selectedWeather.feelsLike }}℃
+            {{ convertTemperature(
+              selectedWeather.feelsLike,
+            ) }}{{ unitSymbol }}
           </strong>
         </div>
 
         <div class="detail-item">
           <span>습도</span>
+
           <strong>
             {{ selectedWeather.humidity }}%
           </strong>
@@ -164,6 +85,7 @@ onMounted(() => {
 
         <div class="detail-item">
           <span>풍속</span>
+
           <strong>
             {{ selectedWeather.wind }}m/s
           </strong>
@@ -171,22 +93,37 @@ onMounted(() => {
 
         <div class="detail-item">
           <span>강수 확률</span>
+
           <strong>
             {{ selectedWeather.rainProbability }}%
           </strong>
         </div>
       </div>
 
-      <RouterLink to="/" class="back-link">
+      <RouterLink
+        to="/"
+        class="back-link"
+      >
         날씨 대시보드로 돌아가기
       </RouterLink>
     </section>
 
-    <section v-else class="not-found">
-      <h1>도시 정보를 찾을 수 없습니다.</h1>
-      <p>존재하지 않는 도시 코드입니다.</p>
+    <section
+      v-else
+      class="not-found"
+    >
+      <h1>
+        도시 정보를 찾을 수 없습니다.
+      </h1>
 
-      <RouterLink to="/" class="back-link">
+      <p>
+        존재하지 않는 도시 코드입니다.
+      </p>
+
+      <RouterLink
+        to="/"
+        class="back-link"
+      >
         날씨 대시보드로 돌아가기
       </RouterLink>
     </section>
@@ -198,7 +135,11 @@ onMounted(() => {
   box-sizing: border-box;
   min-height: calc(100vh - 61px);
   padding: 60px 20px;
-  background: linear-gradient(135deg, #dbeafe, #f0f9ff);
+  background: linear-gradient(
+    135deg,
+    #dbeafe,
+    #f0f9ff
+  );
 }
 
 .detail-card,

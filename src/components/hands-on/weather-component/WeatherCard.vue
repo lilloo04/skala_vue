@@ -1,4 +1,9 @@
 <script setup>
+import { storeToRefs } from 'pinia'
+
+import { useConfigStore } from '../../stores/configStore'
+
+// 부모로부터 날씨 정보 받기
 const props = defineProps({
   weather: {
     type: Object,
@@ -6,10 +11,20 @@ const props = defineProps({
   },
 })
 
+// 부모에게 이벤트 전달
 const emit = defineEmits([
   'select-card',
   'click-detail',
 ])
+
+// Pinia Store 불러오기
+const configStore = useConfigStore()
+
+// Store의 getter를 반응형으로 꺼내기
+const {
+  unitSymbol,
+  convertTemperature,
+} = storeToRefs(configStore)
 
 const selectCard = () => {
   emit('select-card', props.weather)
@@ -39,22 +54,26 @@ const clickDetail = () => {
       </span>
     </div>
 
+    <!-- 현재 설정된 단위로 온도 출력 -->
     <p class="temperature">
-      {{ weather.temp }}℃
+      {{ convertTemperature(weather.temp) }}{{ unitSymbol }}
     </p>
 
+    <!-- 더움 여부는 원본 섭씨 온도로 판단 -->
     <p
       v-if="weather.temp >= 25"
       class="temperature-label hot"
     >
-      🔥 더움 (25도 이상)
+      🔥 더움
+      ({{ convertTemperature(25) }}{{ unitSymbol }} 이상)
     </p>
 
     <p
       v-else
       class="temperature-label cool"
     >
-      ❄️ 선선함 (25도 미만)
+      ❄️ 선선함
+      ({{ convertTemperature(25) }}{{ unitSymbol }} 미만)
     </p>
 
     <p class="humidity">

@@ -5,87 +5,48 @@ import {
   watch,
   watchEffect,
 } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 
 import BaseDashboardCard from '../components/hands-on/exercise/BaseDashboardCard.vue'
 import SearchBar from '../components/hands-on/exercise/SearchBar.vue'
 import WeatherCard from '../components/hands-on/exercise/WeatherCard.vue'
 import HotFilter from '../components/hands-on/exercise/HotFilter.vue'
+import { weatherData } from '../data/weatherData'
+import { useConfigStore } from '../stores/configStore'
 
 const router = useRouter()
 
-const weatherList = ref([
-  {
-    id: 'city_01',
-    name: '서울',
-    temp: 28,
-    status: '맑음',
-    humidity: 45,
-    icon: '☀️',
-  },
-  {
-    id: 'city_02',
-    name: '수원',
-    temp: 24,
-    status: '비',
-    humidity: 80,
-    icon: '🌧️',
-  },
-  {
-    id: 'city_03',
-    name: '부산',
-    temp: 26,
-    status: '구름',
-    humidity: 65,
-    icon: '☁️',
-  },
-  {
-    id: 'city_04',
-    name: '제주',
-    temp: 29,
-    status: '맑음',
-    humidity: 70,
-    icon: '🌤️',
-  },
-  {
-    id: 'city_05',
-    name: '대전',
-    temp: 23,
-    status: '비',
-    humidity: 75,
-    icon: '🌧️',
-  },
-  {
-    id: 'city_06',
-    name: '광주',
-    temp: 27,
-    status: '맑음',
-    humidity: 60,
-    icon: '☀️',
-  },
-  {
-    id: 'city_07',
-    name: '인천',
-    temp: 22,
-    status: '흐림',
-    humidity: 55,
-    icon: '☁️',
-  },
-  {
-    id: 'city_08',
-    name: '대구',
-    temp: 30,
-    status: '맑음',
-    humidity: 50,
-    icon: '☀️',
-  },
-])
+// Pinia Store
+const configStore = useConfigStore()
+
+const {
+  unitSymbol,
+  convertTemperature,
+} = storeToRefs(configStore)
+
+const weatherList = ref(weatherData)
 
 const searchQuery = ref('')
-const selectedCityInfo = ref(
-  '도시를 선택해 주세요.',
-)
+const selectedCity = ref(null)
 const showHotOnly = ref(false)
+
+// 선택한 도시와 온도 단위가 변경될 때마다 다시 계산
+const selectedCityInfo = computed(() => {
+  if (!selectedCity.value) {
+    return '도시를 선택해 주세요.'
+  }
+
+  const weather = selectedCity.value
+  const temperature =
+    convertTemperature.value(weather.temp)
+
+  return (
+    `${weather.name}이(가) 선택되었습니다. ` +
+    `현재 기온은 ${temperature}` +
+    `${unitSymbol.value}입니다.`
+  )
+})
 
 const filteredWeatherList = computed(() => {
   const query = searchQuery.value.trim()
@@ -118,12 +79,10 @@ const updateHotFilter = (checked) => {
 }
 
 const selectCity = (weather) => {
-  selectedCityInfo.value =
-    `${weather.name}이(가) 선택되었습니다. ` +
-    `현재 기온은 ${weather.temp}℃입니다.`
+  selectedCity.value = weather
 }
 
-// alert 대신 상세 페이지로 이동
+// 상세 페이지로 이동
 const showDetail = (weather) => {
   router.push(`/weather/${weather.id}`)
 }
@@ -154,7 +113,10 @@ watch(showHotOnly, (newValue) => {
   <div class="weather-page">
     <header class="weather-header">
       <h1>오늘의 날씨</h1>
-      <p>지역별 날씨 현황을 확인해 보세요.</p>
+
+      <p>
+        지역별 날씨 현황을 확인해 보세요.
+      </p>
     </header>
 
     <BaseDashboardCard variant="search">
@@ -194,7 +156,10 @@ watch(showHotOnly, (newValue) => {
         검색 결과와 일치하는 도시가 없습니다.
       </p>
 
-      <p v-else class="empty-message">
+      <p
+        v-else
+        class="empty-message"
+      >
         조건에 해당하는 도시가 없습니다.
       </p>
     </BaseDashboardCard>
@@ -208,7 +173,11 @@ watch(showHotOnly, (newValue) => {
   min-height: 100vh;
   padding: 40px 20px;
   color: #1f2937;
-  background: linear-gradient(135deg, #dbeafe, #f0f9ff);
+  background: linear-gradient(
+    135deg,
+    #dbeafe,
+    #f0f9ff
+  );
 }
 
 .weather-header {

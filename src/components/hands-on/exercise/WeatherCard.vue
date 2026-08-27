@@ -1,4 +1,8 @@
 <script setup>
+import { storeToRefs } from 'pinia'
+
+import { useConfigStore } from '../../../stores/configStore'
+
 const props = defineProps({
   weather: {
     type: Object,
@@ -10,6 +14,13 @@ const emit = defineEmits([
   'select-card',
   'click-detail',
 ])
+
+const configStore = useConfigStore()
+
+const {
+  unitSymbol,
+  convertTemperature,
+} = storeToRefs(configStore)
 
 const selectCard = () => {
   emit('select-card', props.weather)
@@ -41,21 +52,23 @@ const clickDetail = () => {
     </div>
 
     <p class="temperature">
-      {{ weather.temp }}℃
+      {{ convertTemperature(weather.temp) }}{{ unitSymbol }}
     </p>
 
     <p
       v-if="weather.temp >= 25"
       class="temperature-label hot"
     >
-      🔥 더움 (25도 이상)
+      🔥 더움
+      ({{ convertTemperature(25) }}{{ unitSymbol }} 이상)
     </p>
 
     <p
       v-else
       class="temperature-label cool"
     >
-      ❄️ 선선함 (25도 미만)
+      ❄️ 선선함
+      ({{ convertTemperature(25) }}{{ unitSymbol }} 미만)
     </p>
 
     <p class="humidity">

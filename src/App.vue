@@ -16,18 +16,25 @@ import {
   RouterView,
 } from 'vue-router'
 
+// 4일차 Hands On 과제5
+import UnitToggler from './components/hands-on/exercise/UnitToggler.vue'
+
 </script>
 
 <template>
   <div class="app">
     <nav class="navigation">
-      <RouterLink to="/">
-        날씨 대시보드
-      </RouterLink>
+      <div class="navigation-links">
+        <RouterLink to="/">
+          날씨 대시보드
+        </RouterLink>
 
-      <RouterLink to="/about">
-        서비스 소개
-      </RouterLink>
+        <RouterLink to="/about">
+          서비스 소개
+        </RouterLink>
+      </div>
+
+      <UnitToggler />
     </nav>
 
     <main>
@@ -44,11 +51,17 @@ import {
 
 .navigation {
   display: flex;
-  justify-content: center;
+  align-items: center;
+  justify-content: space-between;
   gap: 24px;
-  padding: 18px 20px;
+  padding: 14px 32px;
   border-bottom: 1px solid #dbeafe;
   background-color: white;
+}
+
+.navigation-links {
+  display: flex;
+  gap: 24px;
 }
 
 .navigation a {
@@ -57,11 +70,16 @@ import {
   text-decoration: none;
 }
 
-.navigation a:hover {
+.navigation a:hover,
+.navigation a.router-link-exact-active {
   color: #2563eb;
 }
 
-.navigation a.router-link-exact-active {
-  color: #2563eb;
+@media (max-width: 600px) {
+  .navigation {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 14px 20px;
+  }
 }
 </style>
