@@ -2,6 +2,13 @@
 
 Vue 3 학습 과정에서 단계별로 발전시킨 날씨 대시보드 프로젝트입니다. 처음에는 Mock Data를 반복 렌더링하는 단일 화면으로 시작했고, Composition API와 컴포넌트 분리, Vue Router, Pinia를 순서대로 적용했습니다. 이후 실제 날씨, 대기질 API, Element Plus, Leaflet 기반 전국 날씨 지도를 추가하며 하나의 애플리케이션으로 확장했습니다.
 
+## URL
+
+https://skala-vue-khaki.vercel.app/
+
+<img width="1624" height="868" alt="스크린샷 2026-08-27 오후 5 14 54" src="https://github.com/user-attachments/assets/c3b28c40-81d2-4f4d-9758-0895233a5925" />
+<img width="1624" height="868" alt="스크린샷 2026-08-27 오후 5 15 52" src="https://github.com/user-attachments/assets/9ca6f3f1-100d-4bfd-91b9-6c6dd69c77e8" />
+
 
 ## 주요 기능
 
@@ -30,48 +37,7 @@ Vue 3 학습 과정에서 단계별로 발전시킨 날씨 대시보드 프로�
 | Map | Leaflet |
 | Quality | ESLint, Vite Production Build |
 
-## 실행 방법
 
-### 1. 저장소 내려받기
-
-```bash
-git clone https://github.com/lilloo04/skala_vue.git
-cd skala_vue
-```
-
-### 2. 의존성 설치
-
-```bash
-npm install
-```
-
-### 3. 환경변수 설정
-
-프로젝트 루트에 `.env` 파일을 만들고 OpenWeatherMap API 키를 입력합니다.
-
-```env
-VITE_OPENWEATHER_API_KEY=발급받은_API_KEY
-```
-
-API 키가 포함된 `.env`는 Git에 커밋하지 않습니다. 대신 저장소에는 아래와 같은 `.env.example`을 둘 수 있습니다.
-
-```env
-VITE_OPENWEATHER_API_KEY=
-```
-
-### 4. 개발 서버 실행
-
-```bash
-npm run dev
-```
-
-터미널에 표시되는 주소(기본값 `http://localhost:5173`)로 접속합니다.
-
-### 5. Production Build
-
-```bash
-npm run build
-```
 
 ## 주요 라우트
 
@@ -82,50 +48,6 @@ npm run build
 | `/about` | `WeatherAboutView.vue` | 서비스 소개 및 메인 화면 이동 링크 제공 |
 | `/map` | `NationalWeatherMapView.vue` | 전국 지도에서 도시별 기온과 선택 지역 정보 표시 |
 | `/:pathMatch(.*)*` | `NotFoundView.vue` | 정의되지 않은 주소에 대한 404 안내 |
-
-라우트 컴포넌트는 동적 `import()`를 사용해 지연 로딩합니다.
-
-```js
-{
-  path: '/weather/:cityId',
-  name: 'weather-detail',
-  component: () => import('../views/WeatherDetailView.vue'),
-}
-```
-
-## 프로젝트 구조
-
-실습 과정에서 사용한 핵심 구조를 기준으로 정리했습니다.
-
-```text
-src/
-├── assets/
-├── components/
-│   └── hands-on/
-│       └── exercise/
-│           ├── BaseDashboardCard.vue
-│           ├── HotFilter.vue
-│           ├── SearchBar.vue
-│           ├── UnitToggler.vue
-│           └── WeatherCard.vue
-├── data/
-│   ├── weatherData.js
-│   └── weatherApiData.js
-├── router/
-│   └── index.js
-├── stores/
-│   └── configStore.js
-├── views/
-│   ├── NationalWeatherMapView.vue
-│   ├── NotFoundView.vue
-│   ├── WeatherAboutView.vue
-│   ├── WeatherDetailView.vue
-│   └── WeatherHomeView.vue
-├── App.vue
-└── main.js
-```
-
-실제 파일 위치나 일부 파일명은 최신 브랜치의 구조에 따라 달라질 수 있습니다.
 
 ## Hands-on 진행 과정
 
@@ -331,7 +253,7 @@ Element Plus를 적용해 화면의 정보 계층과 상태 표현을 개선했�
 - GitHub 저장소가 Public인지 시크릿 브라우저에서 확인합니다.
 - 배포한 경우 새 브라우저에서 라우팅, API 요청, 지도 타일을 다시 확인합니다.
 
-## 핵심 데이터 흐름
+## 데이터 흐름
 
 ```text
 UnitToggler
@@ -350,6 +272,11 @@ WeatherCard 상세보기
 ```
 
 ## 트러블슈팅 기록
+
+### 선택 도시 상태바만 온도 단위가 변경되지 않음
+
+선택 시 완성된 문자열을 저장하면 단위 변경을 추적하지 못합니다. 선택 도시 객체를 `ref`에 저장한 뒤 상태바 문자열을 `computed`로 계산해 해결했습니다.
+
 
 ### 컴포넌트 분리 후 카드가 한 줄에 하나만 표시됨
 
@@ -371,9 +298,6 @@ Vue 기본 전역 CSS의 `#app` 최대 너비와 Grid 설정이 전체 화면 �
 import UnitToggler from './components/hands-on/exercise/UnitToggler.vue'
 ```
 
-### 선택 도시 상태바만 온도 단위가 변경되지 않음
-
-선택 시 완성된 문자열을 저장하면 단위 변경을 추적하지 못합니다. 선택 도시 객체를 `ref`에 저장한 뒤 상태바 문자열을 `computed`로 계산해 해결했습니다.
 
 ## 학습 결과
 
@@ -400,7 +324,7 @@ import UnitToggler from './components/hands-on/exercise/UnitToggler.vue'
 - 정적 호스팅 환경에 맞는 새로고침 라우팅 설정 검증
 
 ## 참고
-
+- SKALA 1) Full-stack Engineering_3.Frontend-framework_Vue.js_강병호_0807.pdf
 - [Vue 공식 문서](https://vuejs.org/)
 - [Vue Router 공식 문서](https://router.vuejs.org/)
 - [Pinia 공식 문서](https://pinia.vuejs.org/)
